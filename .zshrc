@@ -77,16 +77,43 @@ source $ZSH/oh-my-zsh.sh
 # User configuration
 eval "$(rbenv init - zsh)"
 
-alias gs='git status'
-alias gp='git push'
+# Common command aliases
+alias ..="cd .."
 alias c='clear'
-alias ga='git add '
 alias hist='history | grep -i'
 alias run_fastlane='bundle exec fastlane'
+alias szsh='source ~/.zshrc'
+alias which_xcode='/usr/bin/xcodebuild -version'
+
+# Git
+alias ga='git add '
+alias gs='git status'
+alias gp='git push'
+gcom() { git commit -S -m "$1"; }
+gres() { git restore --staged "$1"; }
+delete_all_local_branch() { git branch --merged | grep -v \* | xargs git branch -D; }
+lgrep() { ls | grep "$1"; }
 
 # Function to rebase the current branch onto origin/develop
-# Usage: grd
-function grd() {
+# Usage: grebase
+function grebase() {
+  '
+  grebase: Rebase your current Git branch onto another branch.
+
+  Usage:
+    grebase [target_branch]
+
+  Arguments:
+    target_branch (optional): The branch to rebase onto (e.g., `main`, `feature/xyz`).
+                              Defaults to `develop` if not specified.
+
+  Examples:
+    - `grebase`         : Rebases current branch onto `origin/develop`.
+    - `grebase main`    : Rebases current branch onto `origin/main`.
+
+  Note: Requires confirmation (type `yes`) before proceeding.
+  '
+  
   # Check if we are inside a Git repository
   if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
     echo "Error: You are not inside a Git repository."
@@ -94,16 +121,22 @@ function grd() {
   fi
 
   local current_branch=$(git rev-parse --abbrev-ref HEAD)
+  local target_branch="develop" # Default rebase target branch
 
-  # Prevent rebasing develop onto itself
-  if [[ "$current_branch" == "develop" ]]; then
+  # Check for an argument to set the target branch
+  if [[ -n "$1" ]]; then
+    target_branch="$1"
+  fi
+
+  # Prevent rebasing the target branch onto itself
+  if [[ "$current_branch" == "$target_branch" ]]; then
     echo "You are currently on the '$current_branch' branch."
     echo "Rebasing '$current_branch' onto itself is usually not what you want."
     echo "Please switch to your feature branch (e.g., 'git switch my-feature-branch') before running this command."
     return 1
   fi
 
-  # --- NEW CHECK: Abort if there are uncommitted changes ---
+  # Abort if there are uncommitted changes
   if ! git diff-index --quiet HEAD --; then
     echo ""
     echo "❌ Aborting rebase: Your working directory has uncommitted changes."
@@ -113,25 +146,41 @@ function grd() {
     echo "Then try 'grd' again."
     return 1
   fi
-  # --- END NEW CHECK ---
 
-  echo "--- Git Rebase Develop Helper ---"
+  echo "--- Git Rebase Helper ---"
   echo "Current branch: $current_branch"
-  echo "Fetching the latest 'develop' from 'origin'..."
+  echo "Target branch for rebase: origin/$target_branch"
+  echo ""
 
-  # Fetch the latest 'develop' branch from the 'origin' remote
-  if ! git fetch origin develop; then
-    echo "Error: Failed to fetch 'origin/develop'."
+  # Confirmation step (more compatible way)
+  # Using printf for the prompt and then read for input
+  printf "Do you want to rebase '%s' onto 'origin/%s'? (yes/no): " "$current_branch" "$target_branch"
+  read confirmation
+  case "$confirmation" in
+    [yY][eE][sS])
+      echo "Proceeding with rebase..."
+      ;;
+    *)
+      echo "Rebase aborted by user."
+      return 1
+      ;;
+  esac
+
+  echo "Fetching the latest '$target_branch' from 'origin'..."
+
+  # Fetch the latest target branch from the 'origin' remote
+  if ! git fetch origin "$target_branch"; then
+    echo "Error: Failed to fetch 'origin/$target_branch'."
     echo "Please check your network connection or your Git remote setup."
     return 1
   fi
 
-  echo "Attempting to rebase '$current_branch' onto 'origin/develop'..."
+  echo "Attempting to rebase '$current_branch' onto 'origin/$target_branch'..."
 
-  # Perform the rebase (without --autostash now)
-  if git rebase origin/develop; then
+  # Perform the rebase
+  if git rebase "origin/$target_branch"; then
     echo ""
-    echo "✅ Rebase successful! Your branch '$current_branch' is now rebased onto 'origin/develop'."
+    echo "✅ Rebase successful! Your branch '$current_branch' is now rebased onto 'origin/$target_branch'."
     echo "You can now push your changes (e.g., 'git push --force-with-lease' if you've rewritten history)."
   else
     echo ""
