@@ -57,10 +57,10 @@ if [[ "$(uname)" == "Darwin" ]]; then
 elif [[ "$(uname)" == "Linux" ]]; then
   export PATH="$HOME/.local/bin:$PATH"
 
-  # Pure prompt (Linux)
+  
+  fpath+=~/.zsh/pure
   autoload -U promptinit; promptinit
   prompt pure
-
   cd ~/projects
 fi
 
