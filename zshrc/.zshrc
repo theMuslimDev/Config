@@ -133,3 +133,4 @@ function grebase() {
     return 1
   fi
 }
+export GPG_TTY=$(tty)
