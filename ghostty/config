@@ -1,0 +1,9 @@
+font-family = JetBrains Mono
+font-size = 13
+scrollback-limit = 100000
+window-save-state = always
+
+# Theme: Catppuccin (mod: error red, see themes/catppuccin-frappe-mod).
+# Switch to the light companion with: theme = Catppuccin Latte
+# then reload the config (default keybind: cmd+shift+, on macOS).
+theme = catppuccin-frappe-mod

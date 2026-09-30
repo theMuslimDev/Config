@@ -12,19 +12,14 @@ if [[ "$(uname)" == "Darwin" ]]; then
   alias run_fastlane='bundle exec fastlane'
   alias which_xcode='/usr/bin/xcodebuild -version'
 
-  # SSH into Debian VM
-
   # Mac paths
   path=(/opt/homebrew/bin $path)
-  path=(/Users/muhammedmahmood/Documents/scripts $path)
+  path=($HOME/Documents/scripts $path)
   export PATH="$(brew --prefix)/opt/make/libexec/gnubin:$PATH"
 
-  # Antigravity
-  export PATH="/Users/muhammedmahmood/.antigravity/antigravity/bin:$PATH"
-
   # Mamba / Conda
-  export MAMBA_EXE='/Users/muhammedmahmood/miniforge3/bin/mamba'
-  export MAMBA_ROOT_PREFIX='/Users/muhammedmahmood/miniforge3'
+  export MAMBA_EXE="$HOME/miniforge3/bin/mamba"
+  export MAMBA_ROOT_PREFIX="$HOME/miniforge3"
   __mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
   if [ $? -eq 0 ]; then
     eval "$__mamba_setup"
@@ -33,14 +28,14 @@ if [[ "$(uname)" == "Darwin" ]]; then
   fi
   unset __mamba_setup
 
-  __conda_setup="$('/Users/muhammedmahmood/miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+  __conda_setup="$("$HOME/miniforge3/bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
   if [ $? -eq 0 ]; then
     eval "$__conda_setup"
   else
-    if [ -f "/Users/muhammedmahmood/miniforge3/etc/profile.d/conda.sh" ]; then
-      . "/Users/muhammedmahmood/miniforge3/etc/profile.d/conda.sh"
+    if [ -f "$HOME/miniforge3/etc/profile.d/conda.sh" ]; then
+      . "$HOME/miniforge3/etc/profile.d/conda.sh"
     else
-      export PATH="/Users/muhammedmahmood/miniforge3/bin:$PATH"
+      export PATH="$HOME/miniforge3/bin:$PATH"
     fi
   fi
   unset __conda_setup
@@ -57,10 +52,10 @@ if [[ "$(uname)" == "Darwin" ]]; then
 elif [[ "$(uname)" == "Linux" ]]; then
   export PATH="$HOME/.local/bin:$PATH"
 
-  
-  fpath+=~/.zsh/pure
+  # Pure prompt (Linux)
   autoload -U promptinit; promptinit
   prompt pure
+
   cd ~/projects
 fi
 
@@ -133,4 +128,7 @@ function grebase() {
     return 1
   fi
 }
+
 export GPG_TTY=$(tty)
+
+[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"

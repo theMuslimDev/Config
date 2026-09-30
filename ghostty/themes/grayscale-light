@@ -1,0 +1,21 @@
+# base16 "Grayscale Light" (Alexandre Gavioli) -- companion to grayscale-dark,
+# derived with the same base16->ANSI mapping the dark palette uses.
+foreground = #464646
+background = #f7f7f7
+
+palette = 0=#f7f7f7
+palette = 1=#7c7c7c
+palette = 2=#8e8e8e
+palette = 3=#a0a0a0
+palette = 4=#686868
+palette = 5=#747474
+palette = 6=#868686
+palette = 7=#464646
+palette = 8=#ababab
+palette = 9=#7c7c7c
+palette = 10=#8e8e8e
+palette = 11=#a0a0a0
+palette = 12=#686868
+palette = 13=#747474
+palette = 14=#868686
+palette = 15=#101010

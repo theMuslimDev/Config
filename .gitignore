@@ -1,1 +1,14 @@
 nvim/
+
+# Everything below lives alongside this repo once it's placed at
+# ~/.config, but is intentionally not part of it.
+gh/
+github-copilot/
+fish/
+xm1/
+zed/
+uv/
+# TPM-managed tmux plugin clones (each its own git repo), not our config
+tmux/plugins/
+
+.DS_Store
